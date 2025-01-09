@@ -2,9 +2,11 @@ bl_info = {
     "name": "Quantum Bake",
     "description": "Bakes Textures in bulk",
     "author": "Saphi",
-    "version": (0, 0, 1),
+    "version": (0, 0, 2),
     "blender": (4, 2, 0),
-    "category": "Render",
+    "category": "Node",
+    "location": "Shader Editor > Add > Output > Q Baker Container",
+    "doc_url": "https://github.com/SaphiBlue/QBake"
 }
 
 import bpy
@@ -443,7 +445,7 @@ class QBakeShaderNode(bpy.types.Node):
             layout.prop(self, "image_name", text="Image name")
 
         layout.prop(self, "alpha_mode", text="Alpha Mode")
-        layout.prop(self, "bake_mode", text="Baked Mode")
+        layout.prop(self, "bake_mode", text="Bake Mode")
 
         if ('Color' in self.inputs and not self.inputs["Color"].is_linked):
             layout.label(text="Warning: Color is not linked! Bake will not work", icon='ERROR')
