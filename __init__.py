@@ -238,61 +238,77 @@ def QBakeLogic(operator, context, node_id = None):
                 if(bake_mode == 'PACKED'):
 
 
-                    fromNodeSocket = qBakeNode.inputs['Red'].links[0].from_socket
-                    fromNode = qBakeNode.inputs['Red'].links[0].from_node
-                    link = material.node_tree.links.new(outNode.inputs[0], fromNodeSocket)
+
 
                     redImage = bpy.data.images.new(qBakeNode.image.name + "QBakeRed", width=qBakeNode.image.size[0], height=qBakeNode.image.size[1])
                     redImage.colorspace_settings.name = qBakeNode.image.colorspace_settings.name;
                     redTarget = material.node_tree.nodes.new('ShaderNodeTexImage')
                     redTarget.image = redImage
 
-                    material.node_tree.nodes.active = redTarget
-                    bpy.ops.object.bake(type='EMIT', margin=margin, margin_type='EXTEND')
-                    material.node_tree.nodes.remove(redTarget)
 
-                    fromNodeSocket = qBakeNode.inputs['Green'].links[0].from_socket
-                    fromNode = qBakeNode.inputs['Green'].links[0].from_node
-                    link = material.node_tree.links.new(outNode.inputs[0], fromNodeSocket)
-                    
                     greenImage = bpy.data.images.new(qBakeNode.image.name + "QBakeGreen", width=qBakeNode.image.size[0], height=qBakeNode.image.size[1])
                     greenImage.colorspace_settings.name = qBakeNode.image.colorspace_settings.name;
                     greenTarget = material.node_tree.nodes.new('ShaderNodeTexImage')
                     greenTarget.image = greenImage
 
-                    material.node_tree.nodes.active = greenTarget
-                    bpy.ops.object.bake(type='EMIT', margin=margin, margin_type='EXTEND')
-                    material.node_tree.nodes.remove(greenTarget)
-
-                    fromNodeSocket = qBakeNode.inputs['Blue'].links[0].from_socket
-                    fromNode = qBakeNode.inputs['Blue'].links[0].from_node
-                    link = material.node_tree.links.new(outNode.inputs[0], fromNodeSocket)
 
                     blueImage = bpy.data.images.new(qBakeNode.image.name + "QBakeBlue", width=qBakeNode.image.size[0], height=qBakeNode.image.size[1])
                     blueImage.colorspace_settings.name = qBakeNode.image.colorspace_settings.name;
                     blueTarget = material.node_tree.nodes.new('ShaderNodeTexImage')
                     blueTarget.image = blueImage
 
-                    material.node_tree.nodes.active = blueTarget
-                    bpy.ops.object.bake(type='EMIT', margin=margin, margin_type='EXTEND')
-                    material.node_tree.nodes.remove(blueTarget)
 
-                    fromNodeSocket = qBakeNode.inputs['Alpha'].links[0].from_socket
-                    fromNode = qBakeNode.inputs['Alpha'].links[0].from_node
-                    link = material.node_tree.links.new(outNode.inputs[0], fromNodeSocket)
 
                     alphaImage = bpy.data.images.new(qBakeNode.image.name + "QBakeAlpha", width=qBakeNode.image.size[0], height=qBakeNode.image.size[1])
                     alphaImage.colorspace_settings.name = qBakeNode.image.colorspace_settings.name;
                     alphaTarget = material.node_tree.nodes.new('ShaderNodeTexImage')
                     alphaTarget.image = alphaImage
 
-                    material.node_tree.nodes.active = alphaTarget
-                    bpy.ops.object.bake(type='EMIT', margin=margin, margin_type='EXTEND')
-                    material.node_tree.nodes.remove(alphaTarget)
+                    if(qBakeNode.inputs['Red'].is_linked):
+                        fromNodeSocket = qBakeNode.inputs['Red'].links[0].from_socket
+                        fromNode = qBakeNode.inputs['Red'].links[0].from_node
+                        link = material.node_tree.links.new(outNode.inputs[0], fromNodeSocket)
+                        
+                        material.node_tree.nodes.active = redTarget
+                        bpy.ops.object.bake(type='EMIT', margin=margin, margin_type='EXTEND')
+                    
+
+                    if(qBakeNode.inputs['Green'].is_linked):
+                        fromNodeSocket = qBakeNode.inputs['Green'].links[0].from_socket
+                        fromNode = qBakeNode.inputs['Green'].links[0].from_node
+                        link = material.node_tree.links.new(outNode.inputs[0], fromNodeSocket)
+                    
+                        material.node_tree.nodes.active = greenTarget
+                        bpy.ops.object.bake(type='EMIT', margin=margin, margin_type='EXTEND')
+                        
+
+
+                    if(qBakeNode.inputs['Blue'].is_linked):
+                        fromNodeSocket = qBakeNode.inputs['Blue'].links[0].from_socket
+                        fromNode = qBakeNode.inputs['Blue'].links[0].from_node
+                        link = material.node_tree.links.new(outNode.inputs[0], fromNodeSocket)
+
+                        material.node_tree.nodes.active = blueTarget
+                        bpy.ops.object.bake(type='EMIT', margin=margin, margin_type='EXTEND')
+                        
+
+                    if(qBakeNode.inputs['Alpha'].is_linked):
+                        fromNodeSocket = qBakeNode.inputs['Alpha'].links[0].from_socket
+                        fromNode = qBakeNode.inputs['Alpha'].links[0].from_node
+                        link = material.node_tree.links.new(outNode.inputs[0], fromNodeSocket)
+
+                        material.node_tree.nodes.active = alphaTarget
+                        bpy.ops.object.bake(type='EMIT', margin=margin, margin_type='EXTEND')
+                        
 
                     packedImage = channel_pack(redImage, greenImage, blueImage, alphaImage)
                     qBakeNode.image.pixels[:] = packedImage.pixels[:]
                     qBakeNode.image.pack()
+
+                    material.node_tree.nodes.remove(redTarget)
+                    material.node_tree.nodes.remove(greenTarget)
+                    material.node_tree.nodes.remove(blueTarget)
+                    material.node_tree.nodes.remove(alphaTarget)
 
                     bpy.data.images.remove(packedImage)
                     bpy.data.images.remove(redImage)
