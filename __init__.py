@@ -181,7 +181,7 @@ def QBakeBakeTargetPrepare(context, obj, material, qBakeNode):
         elif(bake_mode == 'PACK'):
             qBakeNode.image.colorspace_settings.name = 'Non-Color'
         elif(bake_mode == 'COLOR'):
-            qBakeNode.image.colorspace_settings.name = 'sRGB'
+            qBakeNode.image.colorspace_settings.name = qBakeNode.image_colorspace
         else:
             qBakeNode.image.colorspace_settings.name = 'sRGB'
 
@@ -402,6 +402,16 @@ class QBakeShaderNode(bpy.types.Node):
         description="Image name if no Reference is given"
     )
     
+    image_colorspace: bpy.props.EnumProperty(
+        name="Image Colorspace",
+        description="Image Color Space",
+        items=[
+            ('sRGB', "sRGB", "Non-Color"),
+            ('Non-Color', "Non-Color", "sRGB"),
+        ],
+        default='sRGB'
+    )
+
     alpha_mode: bpy.props.EnumProperty(
         name="Alpha Mode",
         description="Representation of alpha in the image file, to convert to and from when saving and loading the image",
@@ -416,7 +426,7 @@ class QBakeShaderNode(bpy.types.Node):
     def update_inputs(self, context):
         
         self.inputs.clear()
-        print('test');
+        
         if(self.bake_mode == 'COLOR'):
             self.inputs.new('NodeSocketColor', "Color")
             self.inputs.new('NodeSocketFloat', "Alpha")
@@ -457,11 +467,17 @@ class QBakeShaderNode(bpy.types.Node):
 
         layout.template_ID(self, "image", open="image.open", new="image.new")
 
-        if(not self.image):
-            layout.prop(self, "image_name", text="Image name")
-
-        layout.prop(self, "alpha_mode", text="Alpha Mode")
         layout.prop(self, "bake_mode", text="Bake Mode")
+
+        if(not self.image):
+            imageBox = layout.box()
+            imageBox.label(text="Initial Image Settings")
+            imageBox.prop(self, "image_name", text="Image name")
+            
+            if(self.bake_mode == 'COLOR'):
+                imageBox.prop(self, "image_colorspace", text="Image Colorspace")
+        
+            imageBox.prop(self, "alpha_mode", text="Alpha Mode")
 
         if ('Color' in self.inputs and not self.inputs["Color"].is_linked):
             layout.label(text="Warning: Color is not linked! Bake will not work", icon='ERROR')
