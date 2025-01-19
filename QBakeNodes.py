@@ -47,6 +47,12 @@ class QBakeShaderNode(bpy.types.Node):
         default='STRAIGHT'
     )
 
+    alpha_non_color: bpy.props.BoolProperty(
+        name="Non-Color Alpha",
+        description="Bake Alpha as Non-Color",
+        default = False
+    )
+
     def update_inputs(self, context):
         
         self.inputs.clear()
@@ -93,6 +99,9 @@ class QBakeShaderNode(bpy.types.Node):
 
         layout.prop(self, "bake_mode", text="Bake Mode")
 
+        if(self.bake_mode == 'COLOR'):
+            layout.prop(self, "alpha_non_color", text="Non-Color Alpha")
+            
         if(not self.image):
             imageBox = layout.box()
             imageBox.label(text="Initial Image Settings")
@@ -101,6 +110,8 @@ class QBakeShaderNode(bpy.types.Node):
             if(self.bake_mode == 'COLOR'):
                 imageBox.prop(self, "image_colorspace", text="Image Colorspace")
                 imageBox.prop(self, "alpha_mode", text="Alpha Mode")
+                
+                
                 
 
         if ('Color' in self.inputs and not self.inputs["Color"].is_linked):

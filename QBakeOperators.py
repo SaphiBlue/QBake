@@ -215,7 +215,12 @@ def QBakeLogic(operator, context, node_id = None):
                     link = material.node_tree.links.new(outNode.inputs[0], fromNodeSocket)
 
                     alphaImage = bpy.data.images.new(qBakeNode.image.name + "QBakeAlpha", width=qBakeNode.image.size[0], height=qBakeNode.image.size[1])
-                    alphaImage.colorspace_settings.name = qBakeNode.image.colorspace_settings.name;
+
+                    if (bake_mode == 'COLOR' and qBakeNode.alpha_non_color):
+                        alphaImage.colorspace_settings.name = 'Non-Color'
+                    else:
+                        alphaImage.colorspace_settings.name = qBakeNode.image.colorspace_settings.name
+
                     alphaTarget = material.node_tree.nodes.new('ShaderNodeTexImage')
                     alphaTarget.image = alphaImage
                     material.node_tree.nodes.active = alphaTarget
@@ -244,7 +249,7 @@ def QBakeLogic(operator, context, node_id = None):
 
 
 class QBakeOperator(bpy.types.Operator):
-    """Tooltip"""
+    """Bake All nodes"""
     bl_idname = "render.qbake_operator"
     bl_label = "Bake all Nodes"
 
@@ -257,7 +262,7 @@ class QBakeOperator(bpy.types.Operator):
         return {'FINISHED'}
 
 class QBakeOperatorSingle(bpy.types.Operator):
-    """Tooltip"""
+    """Bake this Node"""
     bl_idname = "render.qbake_operator_single"
     bl_label = "Bake"
     node_id: bpy.props.StringProperty(
