@@ -83,7 +83,7 @@ def QBakeExportLogic(operator, context, images):
 
 def QBakeLogic(operator, context, node_id = None):
     
-    if(not bpy.context.active_object or not hasattr(bpy.context.active_object.data, 'materials')):
+    if(not bpy.context.active_object or not hasattr(bpy.context.active_object.data, 'materials') or bpy.context.active_object.hide_render):
         return
 
     bpy.context.active_object.select_set(True);

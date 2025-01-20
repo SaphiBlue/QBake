@@ -49,7 +49,11 @@ class QBakePanel(bpy.types.Panel):
             if(not bpy.context.active_object or bpy.context.active_object.type != 'MESH'):
                 row.label(text="Select an Object to Bake")
             else:
-                row.operator("render.qbake_operator")
+                if not bpy.context.active_object.hide_render:
+                    row.operator("render.qbake_operator")    
+                else:
+                    row.label(text="Object is not active for rendering", icon='ERROR')
+                
 
         else:
             row.label(text="Only works with CYCLES")
