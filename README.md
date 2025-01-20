@@ -1,8 +1,9 @@
 # Quantum Bake
-This add-on adds a Node to the shader editor, which functions as a Data-Container for a Streamlined Baking Process.
+This add-on adds a Node to the shader editor, which functions as a Data-Container for a Streamlined Baking Process, and mass export.
 
 ## Panel in Render Settings
-![grafik](https://github.com/user-attachments/assets/be78f711-2fab-4232-9f2e-ba846aeb78f9)
+![export](https://github.com/user-attachments/assets/1c4f75d3-88c4-4471-8eb0-5a68fa7d4b32)
+
 
 All Materials on the selected mesh will be handled
 No need to select a Dummy Image first.
@@ -13,10 +14,11 @@ Images will be combined using "numpy" if necessary.
 
 ## Node
 
-![grafik](https://github.com/user-attachments/assets/bf77402d-6933-4bcf-8fb6-7627fb34d27f)
+![grafik](https://github.com/user-attachments/assets/89ef2d52-6bf3-47b1-b28b-1f11a38d3543)
+
 
 ### Image Name
-The Image Name will be added as a suffix if no image reference image is selected. The automatic name will be put together using the Object name, material name, and Material name and the Image name. Best use with https://github.com/SaphiBlue/QExport 
+The Image Name will be added as a suffix if no image reference image is selected. The automatic name will be put together using the Object name, material name, and Material name and the Image name. 
 
 ### Bake Modes
   * Color, Color and Alpha
