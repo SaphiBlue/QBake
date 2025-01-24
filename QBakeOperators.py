@@ -43,6 +43,11 @@ def QBakeBakeTargetPrepare(context, obj, material, qBakeNode):
     bake_mode = qBakeNode.bake_mode
     defaultSize = context.scene.qbake.imageSize
 
+    if(context.scene.qbake.regenerateImages and qBakeNode.image):
+        qBakeNode.image.source = 'GENERATED'
+        qBakeNode.image.generated_width = defaultSize
+        qBakeNode.image.generated_height = defaultSize
+
     if(not qBakeNode.image):
         userImageName = qBakeNode.image_name.strip()
         if(not userImageName):

@@ -15,8 +15,10 @@ class QBakePanel(bpy.types.Panel):
         row = layout.row()
         if bpy.context.scene.render.engine == 'CYCLES':
             row.label(text="Active object is: " + obj.name)
-            row = layout.row()                
+            row = layout.row()
             row.prop(context.scene.qbake, "imageSize")
+            row = layout.row()
+            row.prop(context.scene.qbake, "regenerateImages")            
             row = layout.row()
             row.prop(context.scene.qbake, "margin")
             row = layout.row()

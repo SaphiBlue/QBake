@@ -17,9 +17,13 @@ class QBakeGlobalProps(bpy.types.PropertyGroup):
         min= 1,
         default = 1)
     export: bpy.props.BoolProperty(
-        name = "Export Images after Bake",
+        name = "Export images after Bake",
         description = "Save a Copy of the Baked images to a Path",
         default = False)
+    regenerateImages: bpy.props.BoolProperty(
+        name = "Regenerate images before bake",
+        description = "Clears images before bake and sets the resolution",
+        default = False)    
     exportDir: bpy.props.StringProperty(
         name = "Export File Path",
         description = "Name of output directory",
