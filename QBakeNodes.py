@@ -50,7 +50,7 @@ class QBakeShaderNode(bpy.types.Node):
     alpha_non_color: bpy.props.BoolProperty(
         name="Non-Color Alpha",
         description="Bake Alpha as Non-Color",
-        default = False
+        default = True
     )
 
     def update_inputs(self, context):
