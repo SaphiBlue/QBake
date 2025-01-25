@@ -78,11 +78,18 @@ def QBakeExportLogic(operator, context, images):
     
     for image in images:
         try:
-            tempImage = image.copy()
-            tempImage.file_format = 'PNG'
-            tempImage.filepath = os.path.join(context.scene.qbake.exportDir, image.name + ".png")
-            tempImage.save()
-            bpy.data.images.remove(tempImage)
+            if (context.scene.qbake.removeAfterExport):
+                image.file_format = 'PNG'
+                image.filepath = os.path.join(context.scene.qbake.exportDir, image.name + ".png")
+                image.save()
+                bpy.data.images.remove(image)
+            else:
+                tempImage = image.copy()
+                tempImage.file_format = 'PNG'
+                tempImage.filepath = os.path.join(context.scene.qbake.exportDir, image.name + ".png")
+                tempImage.save()
+                bpy.data.images.remove(tempImage)
+
         except:
             print("Unable to export" + image.name) 
 

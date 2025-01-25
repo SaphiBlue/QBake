@@ -33,6 +33,7 @@ class QBakePanel(bpy.types.Panel):
                 
             exportBox.prop(context.scene.qbake, "export")
             exportBox.prop(context.scene.qbake, "exportDir")
+            exportBox.prop(context.scene.qbake, "removeAfterExport")
             
             if bpy.data.is_dirty:
                 row = layout.row()

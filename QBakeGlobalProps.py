@@ -20,6 +20,10 @@ class QBakeGlobalProps(bpy.types.PropertyGroup):
         name = "Export images after Bake",
         description = "Save a Copy of the Baked images to a Path",
         default = False)
+    removeAfterExport: bpy.props.BoolProperty(
+        name = "Removes images after Bake",
+        description = "Removes images from the Blend File after Bake",
+        default = False)
     regenerateImages: bpy.props.BoolProperty(
         name = "Regenerate images before bake",
         description = "Clears images before bake and sets the resolution",
