@@ -36,7 +36,10 @@ def QBakeBakeNodeLogic(material, qBakeNode, outNode, socketName):
 
 def QBakeBakeNodeLogicAfterBake(material, target):
     target.image.pack()
-    material.node_tree.nodes.remove(target)    
+    material.node_tree.nodes.remove(target)
+    for node in material.node_tree.nodes:     
+        if(node.label == 'QBakeDummy'):
+            material.node_tree.nodes.active = node
 
 
 def QBakeBakeTargetPrepare(context, obj, material, qBakeNode):
@@ -114,20 +117,58 @@ def QBakeLogic(operator, context, node_id = None):
     
     bakedImages = []
 
-    QBakePrepareMaterials(obj, dummyImage)
+    QBakePrepareMaterials(obj, dummyImage)    
 
+    countTotal = 0
+    countCurrent = 0
+
+    #get number of bakes
+    for material in obj.data.materials:
+        for node in material.node_tree.nodes:
+            if(node_id != None and hasattr(node, 'unique_id') and node.unique_id != node_id):
+                continue
+
+            outNode = None
+            dummy = None
+
+            for _node in material.node_tree.nodes:
+                if(_node.label == 'QBakeOut'):
+                    outNode = _node
+                if(_node.label == 'QBakeDummy'):
+                    dummy = _node
+            
+            if(dummy == None):
+                continue
+
+            if(node.bl_idname == 'QBakeShaderNodeType'):
+                countTotal += 1
+
+    # main bake loop
     for material in obj.data.materials:
         for node in material.node_tree.nodes:
             if(node_id != None and hasattr(node, 'unique_id') and node.unique_id != node_id):
                 continue
             
-            outNode = None;    
+            outNode = None
+            dummy = None
 
             for _node in material.node_tree.nodes:
                 if(_node.label == 'QBakeOut'):
                     outNode = _node
-    
+                if(_node.label == 'QBakeDummy'):
+                    dummy = _node
+            
+            if(dummy == None):
+                continue
+
             if(node.bl_idname == 'QBakeShaderNodeType'):
+                
+                countCurrent +=1 
+                material.node_tree.nodes.active = dummy
+
+                print('QBake: Baking ' + str(countCurrent) + ' / ' + str(countTotal))
+                operator.report({'INFO'}, 'QBake: Baking ' + str(countCurrent) + ' / ' + str(countTotal))
+
                 qBakeNode = node
                 QBakeBakeTargetPrepare(context, obj, material, qBakeNode)
                 bake_mode = node.bake_mode
@@ -245,7 +286,8 @@ def QBakeLogic(operator, context, node_id = None):
 
                     bpy.data.images.remove(packedImage)
                     bpy.data.images.remove(alphaImage)
-                
+
+                material.node_tree.nodes.active = dummy
                 bakedImages.append(qBakeNode.image)
 
     QBakeCleanupMaterials(obj, dummyImage)
