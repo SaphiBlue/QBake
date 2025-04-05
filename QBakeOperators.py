@@ -122,10 +122,13 @@ def QBakeLogic(operator, context, node_id = None):
     countTotal = 0
     countCurrent = 0
     initialUVLayer = ''
+    initialUVLayerRender = ''
 
     for uv in obj.data.uv_layers:
         if(uv.active):
             initialUVLayer = uv.name
+        if(uv.active_render):
+            initialUVLayerRender = uv.name
 
     #get number of bakes
     for material in obj.data.materials:
@@ -182,16 +185,20 @@ def QBakeLogic(operator, context, node_id = None):
                     for uv in obj.data.uv_layers:
                         if(uv.name == initialUVLayer):
                             uv.active = True
+                if(initialUVLayerRender != ''):
+                    for uv in obj.data.uv_layers:
+                        if(uv.name == initialUVLayerRender):
+                            uv.active_render = True
 
                 
                 uvTargetIndex = node.get_uv_map_index()
                 
-                if(uvTargetIndex != 0):
-                    uv_index = 0
-                    for uv in obj.data.uv_layers:
-                        if(uv_index == uvTargetIndex):
-                            uv.active = True
-                        uv_index += 1
+                uv_index = 0
+                for uv in obj.data.uv_layers:
+                    if(uv_index == uvTargetIndex):
+                        uv.active = True
+                        uv.active_render = True
+                    uv_index += 1
 
                 if(bake_mode == 'NORMAL' and qBakeNode.inputs['Shader'].is_linked):
                     target = QBakeBakeNodeLogic(material, qBakeNode, outNode, 'Shader')
@@ -319,6 +326,8 @@ def QBakeLogic(operator, context, node_id = None):
     for uv in obj.data.uv_layers:
         if(uv.name == initialUVLayer):
             uv.active = True
+        if(uv.name == initialUVLayerRender):
+            uv.active_render = True
 
     if(context.scene.qbake.export):
         QBakeExportLogic(operator, context, bakedImages)
