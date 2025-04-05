@@ -1,6 +1,7 @@
 import bpy
 import uuid
 from nodeitems_utils import NodeCategory, NodeItem
+from bpy.props import EnumProperty
 
 class QBakeShaderNode(bpy.types.Node):
     '''QBake: Bake Node'''
@@ -80,6 +81,40 @@ class QBakeShaderNode(bpy.types.Node):
         update=update_inputs
     )
 
+
+    uv_map_index: bpy.props.IntProperty(
+        name="UV Map Index",
+        description="UV Map Index"
+    )
+
+    def get_uv_layers(self, context):
+        obj = context.object
+        if obj and obj.type == 'MESH' and obj.data.uv_layers:
+            return [(uv.name, uv.name, "") for uv in obj.data.uv_layers]
+        else:
+            return [("None", "None", "")]
+    
+    def update_uv_index(self, context):
+        obj = context.object
+        if obj and obj.type == 'MESH' and obj.data.uv_layers:
+            self.uv_map_index = 0
+            _uv_map_index = 0
+            for uv in obj.data.uv_layers:
+                if(uv.name == self.uv_map):
+                    self.uv_map_index = _uv_map_index 
+                _uv_map_index += 1
+
+    uv_map: bpy.props.EnumProperty(
+        name="UV Map",
+        description="Choose UV map",
+        items=get_uv_layers,
+        update=update_uv_index
+    )
+
+
+    def get_uv_map_index(self):
+        return self.uv_map_index
+
     def init(self, context):
         self.update_inputs(context)
         self.unique_id = str(uuid.uuid4())
@@ -98,7 +133,7 @@ class QBakeShaderNode(bpy.types.Node):
         layout.template_ID(self, "image", open="image.open", new="image.new")
 
         layout.prop(self, "bake_mode", text="Bake Mode")
-
+        layout.prop(self, "uv_map", text="UV Map")
         if(self.bake_mode == 'COLOR'):
             layout.prop(self, "alpha_non_color", text="Non-Color Alpha")
             

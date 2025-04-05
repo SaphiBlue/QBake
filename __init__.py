@@ -2,7 +2,7 @@ bl_info = {
     "name": "Quantum Bake",
     "description": "Bakes Textures in bulk",
     "author": "Saphi",
-    "version": (1, 0, 6),
+    "version": (1, 0, 7),
     "blender": (4, 2, 0),
     "category": "Node",
     "location": "Shader Editor > Add > Output > Q Baker Container",

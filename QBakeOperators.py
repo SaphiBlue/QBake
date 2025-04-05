@@ -121,6 +121,11 @@ def QBakeLogic(operator, context, node_id = None):
 
     countTotal = 0
     countCurrent = 0
+    initialUVLayer = ''
+
+    for uv in obj.data.uv_layers:
+        if(uv.active):
+            initialUVLayer = uv.name
 
     #get number of bakes
     for material in obj.data.materials:
@@ -173,6 +178,21 @@ def QBakeLogic(operator, context, node_id = None):
                 QBakeBakeTargetPrepare(context, obj, material, qBakeNode)
                 bake_mode = node.bake_mode
                 
+                if(initialUVLayer != ''):
+                    for uv in obj.data.uv_layers:
+                        if(uv.name == initialUVLayer):
+                            uv.active = True
+
+                
+                uvTargetIndex = node.get_uv_map_index()
+                
+                if(uvTargetIndex != 0):
+                    uv_index = 0
+                    for uv in obj.data.uv_layers:
+                        if(uv_index == uvTargetIndex):
+                            uv.active = True
+                        uv_index += 1
+
                 if(bake_mode == 'NORMAL' and qBakeNode.inputs['Shader'].is_linked):
                     target = QBakeBakeNodeLogic(material, qBakeNode, outNode, 'Shader')
                     bpy.ops.object.bake(type='NORMAL', margin=margin, margin_type='EXTEND')
@@ -296,6 +316,10 @@ def QBakeLogic(operator, context, node_id = None):
     bpy.context.scene.render.engine = initialEngine
     bpy.context.scene.cycles.samples = initialSamples
     
+    for uv in obj.data.uv_layers:
+        if(uv.name == initialUVLayer):
+            uv.active = True
+
     if(context.scene.qbake.export):
         QBakeExportLogic(operator, context, bakedImages)
 
