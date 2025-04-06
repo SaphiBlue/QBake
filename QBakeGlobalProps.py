@@ -33,6 +33,10 @@ class QBakeGlobalProps(bpy.types.PropertyGroup):
         description = "Name of output directory",
         default = "//Baked/",
         subtype = 'DIR_PATH',)
+    defaultImgName: bpy.props.StringProperty(
+        name = "Default image name pattern",
+        description = "Name Pattern of bake results\n{obj}: Name of the Object\n{mat}: Name of the material\n{img_name}: Given image name in 'Q Baker Container' node\n",
+        default = "Baked_{obj}_{mat}_{img_name}",)
     
 
 def register():

@@ -16,6 +16,8 @@ class QBakePanel(bpy.types.Panel):
         if bpy.context.scene.render.engine == 'CYCLES':
             row.label(text="Active object is: " + obj.name)
             row = layout.row()
+            row.prop(context.scene.qbake, "defaultImgName")
+            row = layout.row()
             row.prop(context.scene.qbake, "imageSize")
             row = layout.row()
             row.prop(context.scene.qbake, "regenerateImages")            

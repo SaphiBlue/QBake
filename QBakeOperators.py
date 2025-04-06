@@ -56,7 +56,12 @@ def QBakeBakeTargetPrepare(context, obj, material, qBakeNode):
         if(not userImageName):
             userImageName = 'Result'
 
-        imgName = "Baked_" + obj.name.strip() + "_" + material.name.strip() + "_" + userImageName
+        imgName = context.scene.qbake.defaultImgName
+        imgName = imgName.replace("{obj}", obj.name.strip())
+        imgName = imgName.replace("{mat}", material.name.strip())
+        imgName = imgName.replace("{img_name}", userImageName.strip())
+        imgName = bpy.path.clean_name(imgName)
+        
         qBakeNode.image = bpy.data.images.new(imgName, width=defaultSize, height=defaultSize, alpha=True)
         
         if(bake_mode == 'NORMAL'):
