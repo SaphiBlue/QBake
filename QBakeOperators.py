@@ -46,7 +46,7 @@ def QBakeBakeTargetPrepare(context, obj, material, qBakeNode):
     bake_mode = qBakeNode.bake_mode
     defaultSize = context.scene.qbake.imageSize
 
-    if(context.scene.qbake.regenerateImages and qBakeNode.image):
+    if(context.scene.qbake.regenerateImages and qBakeNode.image and qBakeNode.keep_interal == False):
         qBakeNode.image.source = 'GENERATED'
         qBakeNode.image.generated_width = defaultSize
         qBakeNode.image.generated_height = defaultSize
@@ -315,7 +315,9 @@ def QBakeLogic(operator, context, node_id = None):
                     bpy.data.images.remove(alphaImage)
 
                 material.node_tree.nodes.active = dummy
-                bakedImages.append(qBakeNode.image)
+                
+                if(qBakeNode.keep_interal == False):
+                    bakedImages.append(qBakeNode.image)
 
     QBakeCleanupMaterials(obj, dummyImage)
     bpy.data.images.remove(dummyImage)

@@ -54,6 +54,12 @@ class QBakeShaderNode(bpy.types.Node):
         default = True
     )
 
+    keep_interal: bpy.props.BoolProperty(
+        name="Keep internal",
+        description="Keeps the baked result if \"Removes images after Bake\" is set and does not export it",
+        default = False
+    )
+ 
     def update_inputs(self, context):
         
         self.inputs.clear()
@@ -158,6 +164,8 @@ class QBakeShaderNode(bpy.types.Node):
 
         if ('Color' in self.inputs and not self.inputs["Color"].is_linked):
             layout.label(text="Warning: Color is not linked! Bake will not work", icon='ERROR')
+
+        layout.prop(self, "keep_interal", text="Keep internal")
 
     def draw_label(self):
         return self.bl_label
