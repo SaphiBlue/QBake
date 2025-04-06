@@ -59,15 +59,22 @@ class QBakeShaderNode(bpy.types.Node):
         self.inputs.clear()
         
         if(self.bake_mode == 'COLOR'):
-            self.inputs.new('NodeSocketColor', "Color")
-            self.inputs.new('NodeSocketFloat', "Alpha")
+            socket_color = self.inputs.new('NodeSocketColor', "Color")
+            socket_alpha = self.inputs.new('NodeSocketFloat', "Alpha")
+            socket_color.hide_value = True
+            socket_alpha.hide_value = True
         elif(self.bake_mode == 'PACKED'):
-            self.inputs.new('NodeSocketFloat', "Red")
-            self.inputs.new('NodeSocketFloat', "Green")
-            self.inputs.new('NodeSocketFloat', "Blue")
-            self.inputs.new('NodeSocketFloat', "Alpha")
+            socket_r = self.inputs.new('NodeSocketFloat', "Red")
+            socket_g = self.inputs.new('NodeSocketFloat', "Green")
+            socket_b = self.inputs.new('NodeSocketFloat', "Blue")
+            socket_a = self.inputs.new('NodeSocketFloat', "Alpha")
+            socket_r.hide_value = True
+            socket_g.hide_value = True
+            socket_b.hide_value = True
+            socket_a.hide_value = True
         elif(self.bake_mode == 'NORMAL'):
-            self.inputs.new('NodeSocketShader', "Shader")
+            socket_shader = self.inputs.new('NodeSocketShader', "Shader")
+            socket_shader.hide_value = True
 
     bake_mode: bpy.props.EnumProperty(
         name="Bake Mode",
