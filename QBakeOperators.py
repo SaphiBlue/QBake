@@ -46,7 +46,7 @@ def QBakeBakeTargetPrepare(context, obj, material, qBakeNode):
     bake_mode = qBakeNode.bake_mode
     defaultSize = context.scene.qbake.imageSize
 
-    if(context.scene.qbake.regenerateImages and qBakeNode.image and qBakeNode.keep_interal == False):
+    if(context.scene.qbake.regenerateImages and qBakeNode.image and qBakeNode.keep_interal == False and qBakeNode.no_global == False):
         qBakeNode.image.source = 'GENERATED'
         qBakeNode.image.generated_width = defaultSize
         qBakeNode.image.generated_height = defaultSize
@@ -141,6 +141,9 @@ def QBakeLogic(operator, context, node_id = None):
             if(node_id != None and hasattr(node, 'unique_id') and node.unique_id != node_id):
                 continue
 
+            if(node_id == None and hasattr(node, 'no_global') and node.no_global == True):
+                continue
+
             outNode = None
             dummy = None
 
@@ -162,6 +165,9 @@ def QBakeLogic(operator, context, node_id = None):
             if(node_id != None and hasattr(node, 'unique_id') and node.unique_id != node_id):
                 continue
             
+            if(node_id == None and hasattr(node, 'no_global') and node.no_global == True):
+                continue
+
             outNode = None
             dummy = None
 
@@ -321,7 +327,7 @@ def QBakeLogic(operator, context, node_id = None):
 
                 material.node_tree.nodes.active = dummy
                 
-                if(qBakeNode.keep_interal == False):
+                if(qBakeNode.keep_interal == False and qBakeNode.no_global == False):
                     bakedImages.append(qBakeNode.image)
 
     QBakeCleanupMaterials(obj, dummyImage)
