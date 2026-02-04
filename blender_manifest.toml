@@ -1,0 +1,30 @@
+schema_version = "1.0.0"
+
+id = "quantum_bake"
+version = "1.0.12"
+name = "QBake"
+tagline = "Bakes textures in bulk based on thier node setup"
+maintainer = "Saphi <saphidragoness@gmail.com>"
+type = "add-on"
+
+website = "https://github.com/SaphiBlue/QBake"
+
+tags = ["Bake", "Node"]
+
+blender_version_min = "4.5.0"
+
+license = [
+  "SPDX:GPL-3.0-or-later",
+]
+
+[permissions]
+files = "Stores baked textures to disk"
+
+[build]
+paths_exclude_pattern = [
+  "__pycache__/",
+  "/.git/",
+  "/.github/",
+  "/.gitignore",
+  "/*.zip",
+]
