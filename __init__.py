@@ -18,7 +18,7 @@
 
 bl_info = {
     "name": "Quantum Bake",
-    "description": "Bakes Textures in bulk",
+    "description": "Bakes textures in bulk based on thier node setup",
     "author": "Saphi",
     "version": (1, 0, 12),
     "blender": (5, 0, 1),
