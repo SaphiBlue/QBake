@@ -163,6 +163,17 @@ class QBakeShaderNode(bpy.types.Node):
         #if(self.unique_id == ""):
             #self.unique_id = str(uuid.uuid4())
 
+        if self.id_data in bpy.data.node_groups.values():
+            box = layout.box()
+            box.alert = True
+            box.label(
+                text="This node cannot be used inside a Node Group.",
+                icon='ERROR'
+            )
+            box.label(
+                text="Please place it directly in the material node tree, next to the Material Output node.",
+            )
+
         operator = layout.operator("render.qbake_operator_single", text="Bake Node")
         operator.node_id = self.unique_id
 

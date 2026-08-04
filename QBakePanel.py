@@ -31,6 +31,7 @@ class QBakePanel(bpy.types.Panel):
 
         row = layout.row()
         if bpy.context.scene.render.engine == 'CYCLES':
+
             row.label(text="Active object is: " + obj.name)
             row = layout.row()
             row.prop(context.scene.qbake, "defaultImgName")
@@ -43,8 +44,6 @@ class QBakePanel(bpy.types.Panel):
             row = layout.row()
             row.prop(context.scene.qbake, "samples")
             
-
-
             exportBox = layout.box()       
             exportBox.label(text="Export Settings")
             if(bpy.data.filepath == ""):
@@ -65,7 +64,13 @@ class QBakePanel(bpy.types.Panel):
             if (hasUnsavedImages):
                 row = layout.row()
                 row.label(text="The Blender file has unsaved Images.", icon='ERROR')
-            
+
+            if context.scene.qbake.imageSize > 1024 or context.scene.qbake.samples > 1:
+                box = layout.box()
+                box.label(
+                    text="Baking might take some time",
+                    icon='INFO'
+                )
 
             row = layout.row()
             if(not bpy.context.active_object or bpy.context.active_object.type != 'MESH'):
