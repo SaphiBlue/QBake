@@ -15,33 +15,14 @@
 #You should have received a copy of the GNU General Public License
 #along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-bl_info = {
-    "name": "Quantum Bake",
-    "description": "Bakes textures in bulk based on thier node setup",
-    "author": "Saphi",
-    "version": (1, 0, 15),
-    "blender": (5, 2, 0),
-    "category": "Node",
-    "location": "Shader Editor > Add > Output > Q Baker Container",
-    "doc_url": "https://github.com/SaphiBlue/QBake",
-    "tracker_url": "https://github.com/SaphiBlue/QBake/issues"
-}
-
 import bpy
 
-from . import operators
-from . import nodes
-from . import ui
-from . import qbake_global_props
-
+from . import qbake_shader_node
 
 modules = (
-    qbake_global_props,
-    operators,
-    nodes,
-    ui
+    qbake_shader_node,
 )
+
 
 def register():
     for module in modules:
@@ -51,4 +32,4 @@ def register():
 def unregister():
     for module in modules:
         if hasattr(module, 'unregister'):
-            module.unregister()    
+            module.unregister()  

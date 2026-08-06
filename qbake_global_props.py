@@ -17,7 +17,7 @@
 
 import bpy
 
-class QBakeGlobalProps(bpy.types.PropertyGroup):
+class qbake_global_props(bpy.types.PropertyGroup):
     imageSize: bpy.props.IntProperty(
         name = "Image Size",
         description = "Default Image size, if no image reference is given",
@@ -58,9 +58,9 @@ class QBakeGlobalProps(bpy.types.PropertyGroup):
     
 
 def register():
-    bpy.utils.register_class(QBakeGlobalProps)
-    bpy.types.Scene.qbake = bpy.props.PointerProperty(type = QBakeGlobalProps)
+    bpy.utils.register_class(qbake_global_props)
+    bpy.types.Scene.qbake = bpy.props.PointerProperty(type = qbake_global_props)
 
 def unregister():
-    bpy.utils.unregister_class(QBakeGlobalProps)
+    bpy.utils.unregister_class(qbake_global_props)
     del bpy.types.Scene.qbake

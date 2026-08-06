@@ -20,7 +20,7 @@ import uuid
 from nodeitems_utils import NodeCategory, NodeItem
 from bpy.props import EnumProperty
 
-class QBakeShaderNode(bpy.types.Node):
+class qbake_shader_node(bpy.types.Node):
     '''QBake: Bake Node'''
     bl_idname = "QBakeShaderNodeType"
     bl_label = "Q Baker Container"
@@ -205,17 +205,17 @@ class QBakeShaderNode(bpy.types.Node):
     def draw_label(self):
         return self.bl_label
 
-def addQBakeNodeMenu(self, context):
+def add_qbake_shader_node_menu(self, context):
     if getattr(context.space_data, "shader_type", None) == 'OBJECT':
         self.layout.separator()
-        op_props = self.layout.operator("node.add_node", text=QBakeShaderNode.bl_label)
-        op_props.type = QBakeShaderNode.bl_idname
+        op_props = self.layout.operator("node.add_node", text=qbake_shader_node.bl_label)
+        op_props.type = qbake_shader_node.bl_idname
         op_props.use_transform = True
 
 def register():
-    bpy.types.NODE_MT_category_shader_output.append(addQBakeNodeMenu)
-    bpy.utils.register_class(QBakeShaderNode)
+    bpy.types.NODE_MT_category_shader_output.append(add_qbake_shader_node_menu)
+    bpy.utils.register_class(qbake_shader_node)
 
 def unregister():
-    bpy.types.NODE_MT_category_shader_output.remove(addQBakeNodeMenu)
-    bpy.utils.unregister_class(QBakeShaderNode)
+    bpy.types.NODE_MT_category_shader_output.remove(add_qbake_shader_node_menu)
+    bpy.utils.unregister_class(qbake_shader_node)

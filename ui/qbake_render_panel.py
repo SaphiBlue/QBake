@@ -17,10 +17,10 @@
 
 import bpy
 
-class QBakePanel(bpy.types.Panel):
+class qbake_render_panel(bpy.types.Panel):
     """QBake Panel"""
     bl_label = "QBake"
-    bl_idname = "QBAKE_PT_UI_Panel"
+    bl_idname = "QBAKE_PT_UI_Render_Panel"
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "render"
@@ -84,9 +84,11 @@ class QBakePanel(bpy.types.Panel):
 
         else:
             row.label(text="Only works with CYCLES")
+        
+        
 
 def register():
-    bpy.utils.register_class(QBakePanel)
+    bpy.utils.register_class(qbake_render_panel)
 
 def unregister():
-    bpy.utils.unregister_class(QBakePanel)
+    bpy.utils.unregister_class(qbake_render_panel)
