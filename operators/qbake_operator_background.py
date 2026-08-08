@@ -35,6 +35,8 @@ class qbake_operator_background(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
+        if(bpy.data.filepath == ""):
+            return False
         return True
 
     def modal(self, context, event):
