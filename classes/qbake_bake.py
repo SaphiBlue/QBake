@@ -33,19 +33,24 @@ class qbake_bake:
         if(not bpy.context.active_object or not hasattr(bpy.context.active_object.data, 'materials') or bpy.context.active_object.hide_render):
             return
 
-        bpy.context.active_object.select_set(True)
-        bpy.context.view_layer.objects.active = bpy.context.active_object
+        self.obj = bpy.context.active_object
+        self.select_obj()
 
         self.margin = self.context.scene.qbake.margin
 
-        self.dummy_image = bpy.data.images.new("QBakeDummy", width=1, height=1)
-        self.obj = bpy.context.active_object
+        self.dummy_image = bpy.data.images.new("QBakeDummy", width=1, height=1)        
 
         self.initial_engine = bpy.context.scene.render.engine
         self.initial_samples = bpy.context.scene.cycles.samples
 
+        self.initial_use_bake_multires = bpy.context.scene.render.bake.use_multires
+        self.initial_use_selected_to_active = bpy.context.scene.render.bake.use_selected_to_active
+
         bpy.context.scene.render.engine = 'CYCLES'
         bpy.context.scene.cycles.samples = self.context.scene.qbake.samples
+
+        bpy.context.scene.render.bake.use_multires = False
+        bpy.context.scene.render.bake.use_selected_to_active = False
         
         self.baked_images = []
 
@@ -88,9 +93,17 @@ class qbake_bake:
 
         self.prepared = True
 
+    def select_obj(self):
+        bpy.ops.object.select_all(action='DESELECT')
+        self.obj.select_set(True)
+        bpy.context.view_layer.objects.active = self.obj
+
     def prepage_bake_target(self, material, bake_node):
         bake_mode = bake_node.bake_mode
         defaultSize = self.context.scene.qbake.imageSize
+
+        bpy.context.view_layer.objects.active = self.obj
+        bpy.context.active_object.select_set(True)
 
         if(self.context.scene.qbake.regenerateImages and bake_node.image and bake_node.keep_interal == False and bake_node.no_global == False):
             bake_node.image.source = 'GENERATED'
@@ -124,7 +137,7 @@ class qbake_bake:
 
     def bake_node(self, node_id: str):
 
-        bpy.context.view_layer.objects.active = self.obj
+        self.select_obj()
 
         bake_node = self.bake_nodes[node_id]['bake_node']
         material = self.bake_nodes[node_id]['material']
@@ -142,9 +155,9 @@ class qbake_bake:
             return
 
         if(bake_node.bl_idname == 'QBakeShaderNodeType'):
+
             material.node_tree.nodes.active = dummy
-
-
+            
             self.prepage_bake_target(material, bake_node)
 
             bake_mode = bake_node.bake_mode
@@ -296,6 +309,9 @@ class qbake_bake:
 
         bpy.context.scene.render.engine = self.initial_engine
         bpy.context.scene.cycles.samples = self.initial_samples
+
+        bpy.context.scene.render.bake.use_multires = self.initial_use_bake_multires
+        bpy.context.scene.render.bake.use_selected_to_active = self.initial_use_selected_to_active
         
         for uv in self.obj.data.uv_layers:
             if(uv.name == self.initial_uv_layer):
