@@ -29,6 +29,7 @@ class qbake_bake:
         self.prepared = False
         pass
 
+
     def prepare_bake(self):
         if(not bpy.context.active_object or not hasattr(bpy.context.active_object.data, 'materials') or bpy.context.active_object.hide_render):
             return
@@ -397,12 +398,14 @@ class qbake_bake:
         for node_id, bake in self.bake_nodes.items():
             self.count_current +=1 
             print('QBake: Baking ' + str(self.count_current) + ' / ' + str(self.count_total))
-            self.operator.report({'INFO'}, 'QBake: Baking ' + str(self.count_current) + ' / ' + str(self.count_total))
+            if self.operator:
+                self.operator.report({'INFO'}, 'QBake: Baking ' + str(self.count_current) + ' / ' + str(self.count_total))
             self.bake_node(node_id)
 
         if(self.count_total <= 0):
             print('QBake: Nothing to bake')
-            self.operator.report({'INFO'}, 'QBake: Nothing to bake')
+            if self.operator:
+                self.operator.report({'INFO'}, 'QBake: Nothing to bake')
 
         self.after_bake()
 
@@ -415,7 +418,8 @@ class qbake_bake:
             if(not bake['baked']):
                 self.count_current +=1 
                 print('QBake: Baking ' + str(self.count_current) + ' / ' + str(self.count_total))
-                self.operator.report({'INFO'}, 'QBake: Baking ' + str(self.count_current) + ' / ' + str(self.count_total))
+                if self.operator:
+                    self.operator.report({'INFO'}, 'QBake: Baking ' + str(self.count_current) + ' / ' + str(self.count_total))
                 self.bake_node(node_id)
                 break
 

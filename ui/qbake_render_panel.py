@@ -77,7 +77,8 @@ class qbake_render_panel(bpy.types.Panel):
                 row.label(text="Select an Object to Bake")
             else:
                 if not bpy.context.active_object.hide_render:
-                    row.operator("render.qbake_operator")    
+                    row.operator("render.qbake_operator")
+                    row.operator("render.qbake_operator_background")
                 else:
                     row.label(text="Object is not active for rendering", icon='ERROR')
                 

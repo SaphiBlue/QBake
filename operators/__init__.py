@@ -20,12 +20,14 @@ import bpy
 from . import qbake_operator
 from . import qbake_operator_single
 from . import qbake_operator_material
+from . import qbake_operator_background
 
 
 modules = (
     qbake_operator,
     qbake_operator_single,
-    qbake_operator_material
+    qbake_operator_material,
+    qbake_operator_background
 )
 
 
