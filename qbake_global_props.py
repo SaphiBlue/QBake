@@ -22,39 +22,69 @@ class qbake_global_props(bpy.types.PropertyGroup):
         name = "Image Size",
         description = "Default Image size, if no image reference is given",
         min= 1,
-        default = 1024)
+        default = 1024
+    )
     margin: bpy.props.IntProperty(
         name = "Baked Margin",
         description = "Default Margin",
         min=0,
-        default = 64)
+        default = 64
+    )
     samples: bpy.props.IntProperty(
         name = "Samples",
         description = "Samples during Bake",
         min= 1,
-        default = 1)
+        default = 1
+    )
     export: bpy.props.BoolProperty(
         name = "Export images after Bake",
         description = "Save a Copy of the Baked images to a Path",
-        default = False)
+        default = False
+    )
     removeAfterExport: bpy.props.BoolProperty(
         name = "Removes images after Bake",
         description = "Removes images from the Blend File after Bake",
-        default = False)
+        default = False
+    )
     regenerateImages: bpy.props.BoolProperty(
         name = "Regenerate images before bake",
         description = "Clears images before bake and sets the resolution",
-        default = False)    
+        default = False
+    )
+    
     exportDir: bpy.props.StringProperty(
         name = "Export File Path",
         description = "Name of output directory",
         default = "//Baked/",
         subtype = 'DIR_PATH',
-        options={'PATH_SUPPORTS_BLEND_RELATIVE'},)
+        options={'PATH_SUPPORTS_BLEND_RELATIVE'}
+    )
+    
     defaultImgName: bpy.props.StringProperty(
         name = "Default image name pattern",
         description = "Name Pattern of bake results\n{obj}: Name of the Object\n{mat}: Name of the material\n{img_name}: Given image name in 'Q Baker Container' node\n",
-        default = "Baked_{obj}_{mat}_{img_name}",)
+        default = "Baked_{obj}_{mat}_{img_name}",
+    )
+    
+    progess_bake_progress: bpy.props.FloatProperty(
+        name="QBake Background Progress",
+        min=0.0,
+        max=1.0,
+        default=0.0,
+        options={'SKIP_SAVE'}
+    )
+
+    progess_bake_is_running: bpy.props.BoolProperty(
+        name="QBake Running in Background",
+        default=False,
+        options={'SKIP_SAVE'}
+    )
+
+    progess_bake_msg: bpy.props.StringProperty(
+        name = "QBake Progress message",
+        default="",
+        options={'SKIP_SAVE'}
+    )
     
 
 def register():

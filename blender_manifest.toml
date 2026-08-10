@@ -1,7 +1,7 @@
 schema_version = "1.0.0"
 
 id = "quantum_bake"
-version = "1.0.18"
+version = "1.0.19"
 name = "QBake"
 tagline = "Bakes textures in bulk based on thier node setup"
 maintainer = "Saphi <saphidragoness@gmail.com>"

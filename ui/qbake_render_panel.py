@@ -81,6 +81,12 @@ class qbake_render_panel(bpy.types.Panel):
                     row.operator("render.qbake_operator_background")
                 else:
                     row.label(text="Object is not active for rendering", icon='ERROR')
+
+            if context.scene.qbake.progess_bake_is_running:
+                row = layout.progress(
+                    factor=context.scene.qbake.progess_bake_progress,
+                    text=context.scene.qbake.progess_bake_msg
+                )
                 
 
         else:

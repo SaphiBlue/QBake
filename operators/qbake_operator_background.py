@@ -37,13 +37,16 @@ class qbake_operator_background(bpy.types.Operator):
     def poll(cls, context):
         if(bpy.data.filepath == ""):
             return False
+        if(context.scene.qbake.progess_bake_is_running):
+            return False
+        
         return True
 
     def modal(self, context, event):
         if event.type != 'TIMER':
             return {'PASS_THROUGH'}
 
-        self.get_status()
+        self.get_status(context)
 
         if self.finished:
             self.done(context)
@@ -53,7 +56,7 @@ class qbake_operator_background(bpy.types.Operator):
         
 
     def execute(self, context):
-        self.init()
+        self.init(context)
 
         wm = context.window_manager
         self._timer = wm.event_timer_add(1, window=context.window)
@@ -66,11 +69,16 @@ class qbake_operator_background(bpy.types.Operator):
         wm.event_timer_remove(self._timer)
         self.status = None
 
-    def init(self):
+    def init(self, context):
+        
         self.report({'INFO'}, f"QBake: initialization")
+        context.scene.qbake.progess_bake_is_running = True
+        context.scene.qbake.progess_bake_progress = 0
+        context.scene.qbake.progess_bake_msg = "initialization"
         self.attemps = 0
         self.finished = False
         self.status = status.status()
+        self.status.delete()
 
         blend_file = bpy.data.filepath
         addon_dir = os.path.dirname(os.path.dirname(__file__))
@@ -89,7 +97,7 @@ class qbake_operator_background(bpy.types.Operator):
             worker
         ])
 
-    def get_status(self):
+    def get_status(self, context):
         if(self.attemps > 10):
             self.finished = True
 
@@ -103,17 +111,35 @@ class qbake_operator_background(bpy.types.Operator):
 
         if(current_status['status'] == 'INIT'):
             self.report({'INFO'}, f"QBake: worker initialization")
+            context.scene.qbake.progess_bake_is_running = True
+            context.scene.qbake.progess_bake_progress = 0
+            context.scene.qbake.progess_bake_msg = "worker initialization"
+            self.redraw(context)
             return
 
         if(current_status['status'] == 'BAKING'):
             self.report({'INFO'}, f"QBake: baking {current_status['current']} / {current_status['total']}")
+            context.scene.qbake.progess_bake_is_running = True
+            context.scene.qbake.progess_bake_msg = f"baking {current_status['current']} / {current_status['total']}"
+            context.scene.qbake.progess_bake_progress = (current_status['current'] / current_status['total'])
+            self.redraw(context)
             return
 
         if(current_status['status'] == 'DONE'):
             self.report({'INFO'}, f"QBake: done")
+            context.scene.qbake.progess_bake_is_running = False
+            context.scene.qbake.progess_bake_msg = ""
+            context.scene.qbake.progess_bake_progress = 1
             self.status.delete()
             self.finished = True
+            self.redraw(context)
             return
+
+    def redraw(self, context):
+        for area in context.screen.areas:
+            if area.type == 'PROPERTIES':
+                if area.spaces.active.context == 'RENDER':
+                    area.tag_redraw()
         
 
 def register():
