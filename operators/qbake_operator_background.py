@@ -26,19 +26,34 @@ class qbake_operator_background(bpy.types.Operator):
     """Bake All nodes in Background"""
     bl_idname = "render.qbake_operator_background"
     bl_label = "Bake all Nodes in Background"
+    node_id: bpy.props.StringProperty(
+        name="unique_id of node",
+        description="internal use"
+    )
+    material_name: bpy.props.StringProperty(
+        name="material name",
+        description="internal use"
+    )
 
     _timer = None
     status = None
-    process = None
+    
     finished = False
     attemps = 0
+
+    process = None
+    bake_progress = 0
+    bake_msg = ""
+    bake_info = ""
 
     @classmethod
     def poll(cls, context):
         if(bpy.data.filepath == ""):
             return False
-        if(context.scene.qbake.progess_bake_is_running):
+        if(qbake_operator_background.process is not None):
             return False
+        if(qbake_operator_background.status is not None):
+            return False        
         
         return True
 
@@ -67,18 +82,29 @@ class qbake_operator_background(bpy.types.Operator):
     def done(self, context):
         wm = context.window_manager
         wm.event_timer_remove(self._timer)
-        self.status = None
+        qbake_operator_background.stop_worker()
+        qbake_operator_background.status = None
+        self.finished = True
+        self.redraw(context)
 
     def init(self, context):
-        
-        self.report({'INFO'}, f"QBake: initialization")
-        context.scene.qbake.progess_bake_is_running = True
-        context.scene.qbake.progess_bake_progress = 0
-        context.scene.qbake.progess_bake_msg = "initialization"
         self.attemps = 0
         self.finished = False
-        self.status = status.status()
-        self.status.delete()
+
+        self.report({'INFO'}, f"QBake: initialization")
+
+        material_name = self.material_name
+        node_id = self.node_id
+
+        qbake_operator_background.bake_progress = 0
+        qbake_operator_background.bake_msg = "initialization"
+
+        qbake_operator_background.status = status.status()
+        qbake_operator_background.status.delete()
+
+        qbake_operator_background.bake_info = f"Bake nodes of {bpy.context.view_layer.objects.active.name}"
+        if material_name is not "":
+            qbake_operator_background.bake_info += f" material: {material_name}"
 
         blend_file = bpy.data.filepath
         addon_dir = os.path.dirname(os.path.dirname(__file__))
@@ -89,48 +115,71 @@ class qbake_operator_background(bpy.types.Operator):
             "bake_worker.py"
         )
 
-        self.process = subprocess.Popen([
+        qbake_operator_background.status.write({
+            'status': 'INIT'
+        })
+
+        qbake_operator_background.process = subprocess.Popen([
             bpy.app.binary_path,
             "--background",
             blend_file,
             "--python",
-            worker
+            worker,
+            "--",
+            "--material",
+            material_name,
         ])
-
+        
     def get_status(self, context):
-        if(self.attemps > 10):
+        if(self.attemps > 20):
             self.finished = True
+            
 
         
-        current_status = self.status.read()
+        current_status = qbake_operator_background.status.read()
         if(current_status is False):
+            print('Read Error')
             self.attemps += 1
             return
 
         self.attemps = 0
 
+        if(qbake_operator_background.process is None):
+            self.report({'INFO'}, f"QBake: Canceld")
+            qbake_operator_background.bake_msg = ""
+            qbake_operator_background.bake_progress = 1
+            qbake_operator_background.status.delete()
+            self.finished = True
+            self.redraw(context)
+            return
+
         if(current_status['status'] == 'INIT'):
-            self.report({'INFO'}, f"QBake: worker initialization")
-            context.scene.qbake.progess_bake_is_running = True
-            context.scene.qbake.progess_bake_progress = 0
-            context.scene.qbake.progess_bake_msg = "worker initialization"
+            self.report({'INFO'}, f"QBake: Worker initialization")
+            qbake_operator_background.bake_progress = 0
+            qbake_operator_background.bake_msg = "Worker initialization"
             self.redraw(context)
             return
 
         if(current_status['status'] == 'BAKING'):
-            self.report({'INFO'}, f"QBake: baking {current_status['current']} / {current_status['total']}")
-            context.scene.qbake.progess_bake_is_running = True
-            context.scene.qbake.progess_bake_msg = f"baking {current_status['current']} / {current_status['total']}"
-            context.scene.qbake.progess_bake_progress = (current_status['current'] / current_status['total'])
+            self.report({'INFO'}, f"QBake: Baking {current_status['current']} / {current_status['total']}")
+            qbake_operator_background.bake_msg = f"Baking {current_status['current']} / {current_status['total']}"
+            qbake_operator_background.bake_progress = (current_status['current'] / current_status['total'])
+            self.redraw(context)
+            return
+
+        if(current_status['status'] == 'EXPORT'):
+            self.report({'INFO'}, f"QBake: Exporting")
+            qbake_operator_background.bake_msg = f"Exporting {current_status['current']} / {current_status['total']}"
+            qbake_operator_background.bake_progress = (current_status['current'] / current_status['total'])
             self.redraw(context)
             return
 
         if(current_status['status'] == 'DONE'):
             self.report({'INFO'}, f"QBake: done")
-            context.scene.qbake.progess_bake_is_running = False
-            context.scene.qbake.progess_bake_msg = ""
-            context.scene.qbake.progess_bake_progress = 1
-            self.status.delete()
+            qbake_operator_background.process = None
+            qbake_operator_background.bake_msg = ""
+            qbake_operator_background.bake_progress = 1
+            qbake_operator_background.status.delete()
             self.finished = True
             self.redraw(context)
             return
@@ -140,6 +189,33 @@ class qbake_operator_background(bpy.types.Operator):
             if area.type == 'PROPERTIES':
                 if area.spaces.active.context == 'RENDER':
                     area.tag_redraw()
+
+            if area.type == 'NODE_EDITOR':
+                if area.ui_type == 'ShaderNodeTree':
+                    area.tag_redraw()
+
+    @classmethod
+    def stop_worker(cls):
+        if qbake_operator_background.process is None:
+            return
+
+        if qbake_operator_background.process.poll() is None:
+            print("QBake: Stopping worker")
+
+            qbake_operator_background.process.terminate()
+
+            try:
+                qbake_operator_background.process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                print("QBake: Worker did not terminate, killing...")
+                qbake_operator_background.process.kill()
+
+        qbake_operator_background.process = None
+
+        try:
+            qbake_operator_background.status.delete()
+        except:
+            pass
         
 
 def register():
@@ -147,4 +223,5 @@ def register():
 
 
 def unregister():
+    qbake_operator_background.stop_worker()
     bpy.utils.unregister_class(qbake_operator_background)

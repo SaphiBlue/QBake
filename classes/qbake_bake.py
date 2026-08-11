@@ -21,12 +21,13 @@ import os
 from ..helper import image_utils
 
 class qbake_bake:
-    def __init__(self, operator, context, node_id: str = None, material: bpy.types.Material = None):
+    def __init__(self, operator, context, node_id: str = None, material: bpy.types.Material = None, status=None):
         self.operator = operator
         self.context = context
         self.node_id = node_id
         self.material = material
         self.prepared = False
+        self.status = status
         pass
 
 
@@ -372,9 +373,17 @@ class qbake_bake:
         if(not self.context.scene.qbake.export):
             return
         
-        for image in self.baked_images:
+        for index, image in enumerate(self.baked_images):
             if(image): 
                 try:
+
+                    if self.status:
+                        self.status.write({
+                            'status': 'EXPORT',
+                            'current': index + 1,
+                            'total': len(self.baked_images)
+                        })
+
                     if (self.context.scene.qbake.removeAfterExport):
                         image.file_format = 'PNG'
                         image.filepath = os.path.join(self.context.scene.qbake.exportDir, image.name + ".png")
@@ -400,6 +409,12 @@ class qbake_bake:
             print('QBake: Baking ' + str(self.count_current) + ' / ' + str(self.count_total))
             if self.operator:
                 self.operator.report({'INFO'}, 'QBake: Baking ' + str(self.count_current) + ' / ' + str(self.count_total))
+            if self.status:
+                self.status.write({
+                    'status': 'BAKING',
+                    'current': self.count_current,
+                    'total': self.count_total
+                })
             self.bake_node(node_id)
 
         if(self.count_total <= 0):

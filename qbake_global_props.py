@@ -66,26 +66,6 @@ class qbake_global_props(bpy.types.PropertyGroup):
         default = "Baked_{obj}_{mat}_{img_name}",
     )
     
-    progess_bake_progress: bpy.props.FloatProperty(
-        name="QBake Background Progress",
-        min=0.0,
-        max=1.0,
-        default=0.0,
-        options={'SKIP_SAVE'}
-    )
-
-    progess_bake_is_running: bpy.props.BoolProperty(
-        name="QBake Running in Background",
-        default=False,
-        options={'SKIP_SAVE'}
-    )
-
-    progess_bake_msg: bpy.props.StringProperty(
-        name = "QBake Progress message",
-        default="",
-        options={'SKIP_SAVE'}
-    )
-    
 
 def register():
     bpy.utils.register_class(qbake_global_props)

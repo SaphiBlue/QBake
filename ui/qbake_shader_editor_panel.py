@@ -16,6 +16,7 @@
 #along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import bpy
+from ..operators import qbake_operator_background
 
 class qbake_shader_editor_panel(bpy.types.Panel):
     bl_space_type = 'NODE_EDITOR'
@@ -46,8 +47,25 @@ class qbake_shader_editor_panel(bpy.types.Panel):
         if(material is None):
             return
 
+        layout = self.layout
 
-        operator = self.layout.operator("render.qbake_operator_material", text="Bake Material")
+        operator_mat = self.layout.operator("render.qbake_operator_material", text="Bake Material")
+
+        if (self.get_material(context) is not None):
+            operator_mat_background = self.layout.operator("render.qbake_operator_background", text="Bake Material in Background")
+            operator_mat_background.node_id = ""
+            operator_mat_background.material_name = self.get_material(context).name_full
+
+            if qbake_operator_background.qbake_operator_background.process is not None:
+                bake_box = layout.box()
+                bake_box.label(text=qbake_operator_background.qbake_operator_background.bake_info)
+                bake_box.progress(
+                    factor=qbake_operator_background.qbake_operator_background.bake_progress,
+                    text=qbake_operator_background.qbake_operator_background.bake_msg
+                )
+                bake_box.operator("render.qbake_operator_background_cancel")
+
+
         
         
 

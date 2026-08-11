@@ -18,30 +18,31 @@
 import bpy
 
 from ..classes import qbake_bake
+from ..operators import qbake_operator_background
 
-class qbake_operator_single(bpy.types.Operator):
-    """Bake this Node"""
-    bl_idname = "render.qbake_operator_single"
-    bl_label = "Bake"
-    node_id: bpy.props.StringProperty(
-        name="unique_id of node",
-        description="internal use"
-    )
+class qbake_operator_background_cancel(bpy.types.Operator):
+    """Cancel Bake"""
+    bl_idname = "render.qbake_operator_background_cancel"
+    bl_label = "Cancel Bake"
+
+    _timer = None
+    qbake = None
+    state = ''
 
     @classmethod
     def poll(cls, context):
+        if qbake_operator_background.qbake_operator_background.process is None:
+            return False
         return True
 
+
     def execute(self, context):
-        qbake =  qbake_bake.qbake_bake(operator=self, context=context, node_id=self.node_id)
-        qbake.bake_all()
+        qbake_operator_background.qbake_operator_background.stop_worker()
         return {'FINISHED'}
 
-
-
 def register():
-    bpy.utils.register_class(qbake_operator_single)
+    bpy.utils.register_class(qbake_operator_background_cancel)
 
 
 def unregister():
-    bpy.utils.unregister_class(qbake_operator_single)
+    bpy.utils.unregister_class(qbake_operator_background_cancel)

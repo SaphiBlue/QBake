@@ -17,6 +17,8 @@
 
 import bpy
 
+from ..operators import qbake_operator_background
+
 class qbake_render_panel(bpy.types.Panel):
     """QBake Panel"""
     bl_label = "QBake"
@@ -44,14 +46,14 @@ class qbake_render_panel(bpy.types.Panel):
             row = layout.row()
             row.prop(context.scene.qbake, "samples")
             
-            exportBox = layout.box()       
-            exportBox.label(text="Export Settings")
+            export_box = layout.box()
+            export_box.label(text="Export Settings")
             if(bpy.data.filepath == ""):
-                exportBox.label(text="Blender File File is not saved, export might not work", icon='ERROR')
+                export_box.label(text="Blender File File is not saved, export might not work", icon='ERROR')
                 
-            exportBox.prop(context.scene.qbake, "export")
-            exportBox.prop(context.scene.qbake, "exportDir")
-            exportBox.prop(context.scene.qbake, "removeAfterExport")
+            export_box.prop(context.scene.qbake, "export")
+            export_box.prop(context.scene.qbake, "exportDir")
+            export_box.prop(context.scene.qbake, "removeAfterExport")
             
             if bpy.data.is_dirty:
                 row = layout.row()
@@ -77,16 +79,22 @@ class qbake_render_panel(bpy.types.Panel):
                 row.label(text="Select an Object to Bake")
             else:
                 if not bpy.context.active_object.hide_render:
-                    row.operator("render.qbake_operator")
-                    row.operator("render.qbake_operator_background")
+                    operator = row.operator("render.qbake_operator")
+                    operator_background = row.operator("render.qbake_operator_background")
+                    operator_background.node_id = ""
+                    operator_background.material_name = ""
                 else:
                     row.label(text="Object is not active for rendering", icon='ERROR')
 
-            if context.scene.qbake.progess_bake_is_running:
-                row = layout.progress(
-                    factor=context.scene.qbake.progess_bake_progress,
-                    text=context.scene.qbake.progess_bake_msg
+            if qbake_operator_background.qbake_operator_background.process is not None:
+                bake_box = layout.box()
+                bake_box.label(text=qbake_operator_background.qbake_operator_background.bake_info)
+                bake_box.progress(
+                    factor=qbake_operator_background.qbake_operator_background.bake_progress,
+                    text=qbake_operator_background.qbake_operator_background.bake_msg
                 )
+                bake_box.operator("render.qbake_operator_background_cancel")
+                
                 
 
         else:
